@@ -22,7 +22,6 @@ function AppContent() {
     isMobile,
     sidebarOpen,
     setSidebarOpen,
-    isInputFocused,
     showToolsSettings,
     setShowToolsSettings,
     showQuickSettings,
@@ -48,7 +47,7 @@ function AppContent() {
         }
       }
     }
-  }, [sessionId, projects, selectedSession, selectedProject, setSelectedProject, setSelectedSession, setActiveTab]);
+  }, [sessionId, projects, selectedSession, selectedProject, setSelectedProject, setSelectedSession, setActiveTab, navigate]);
 
   const handleProjectSelect = (project) => {
     setSelectedProject(project);
@@ -60,7 +59,6 @@ function AppContent() {
   };
 
   const handleSessionSelect = (session) => {
-    // Find the project that this session belongs to
     const projectOfSession = projects.find(p => p.sessions?.some(s => s.id === session.id));
     if (projectOfSession && selectedProject?.name !== projectOfSession.name) {
         setSelectedProject(projectOfSession);
