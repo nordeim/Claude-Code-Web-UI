@@ -1,30 +1,17 @@
+// src/components/MobileNav.jsx
 import React from 'react';
-import { MessageSquare, Folder, Terminal, GitBranch, Globe } from 'lucide-react';
+import { MessageSquare, Folder, Terminal, GitBranch } from 'lucide-react';
+import { useApp } from '../contexts/AppContext';
 
-function MobileNav({ activeTab, setActiveTab, isInputFocused }) {
-  // Detect dark mode
+function MobileNav() {
+  const { activeTab, setActiveTab, isInputFocused } = useApp();
   const isDarkMode = document.documentElement.classList.contains('dark');
+  
   const navItems = [
-    {
-      id: 'chat',
-      icon: MessageSquare,
-      onClick: () => setActiveTab('chat')
-    },
-    {
-      id: 'shell',
-      icon: Terminal,
-      onClick: () => setActiveTab('shell')
-    },
-    {
-      id: 'files',
-      icon: Folder,
-      onClick: () => setActiveTab('files')
-    },
-    {
-      id: 'git',
-      icon: GitBranch,
-      onClick: () => setActiveTab('git')
-    }
+    { id: 'chat', icon: MessageSquare, onClick: () => setActiveTab('chat') },
+    { id: 'shell', icon: Terminal, onClick: () => setActiveTab('shell') },
+    { id: 'files', icon: Folder, onClick: () => setActiveTab('files') },
+    { id: 'git', icon: GitBranch, onClick: () => setActiveTab('git') }
   ];
 
   return (

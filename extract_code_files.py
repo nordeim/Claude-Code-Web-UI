@@ -82,7 +82,7 @@ def extract_files(input_file_path, encoding):
     overwrites = []
 
     # Accept code fence markers for various languages.
-    code_fence_pattern = re.compile(r"^```(?:python|py|ts|tsx|js|jsx|json|prisma|css|mjs|sql)\s*$")
+    code_fence_pattern = re.compile(r"^```(?:python|py|ts|tsx|js|jsx|json|prisma|css|mjs|jsx|sql)\s*$")
     # Support marker lines that start with "# File:" or with "//"
     file_marker_pattern = re.compile(r"^(?:#\s*File:\s*|//\s*)(.+)$")
     closing_fence_pattern = re.compile(r"^```\s*$")

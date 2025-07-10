@@ -2,3 +2,17 @@ excellent result so far! please proceed with the next step/phase in your enhance
 
 The important point is to proceed very carefully so as not to introduce any regression error or accidentally omit the original features or functions. use the same tested rigorous and meticulous approach. thank you and good luck!
 
+---
+severe bug: when I click on a project "new1", it redirects me to a totally blank screen. You really need to very carefully review and validate the changes to the files involved in recent round of execution. We have a serious regression due to failure to double-check and double confirm the changes via line by line comparison using "diff" against the original or previous versions of the files. Also very carefully review to double-check whether there are files you have not modified to make them compatible with the recent refactoring exercise?
+
+---
+please proceed to update the rest of the components. please first come up with a list of files that need updating (refactoring), then carefully review and validate each file in the list, plan what changes and modifications needed, and add a section to the overall refactoring plan for each file with the details of changes need and its integrated checklist. Once all the component files have been added to the refactoring execution plan with one section for each file detailing the changes needed and its checklist, carefully review the overall plan thus created again vary carefully to double-check and validate their correctness and completeness.
+
+---
+awesome job! but I want a *complete* updated *replacement* file for each file in your latest "refactoring" list. I want a complete and fully tested working direct drop-in replacement, instead of one with placeholder comment lines. Please generate these files in batches of 3 files each (sub phases). Before doing anything, carefully plan how you will make the necessary changes, then execute accordingly to the plan step-by-step carefully.
+
+---
+awesome job so far! please use the same rigor and meticulous approach to cautiously and systematically generate the files for Batch 2. Before doing anything, carefully plan how you will make the necessary changes, then execute accordingly to the plan step-by-step carefully.
+
+Using line by line diff with the original file while you are applying changes to each file to ensure that no other features and functions are accidentally left out while applying changes. we don't want to introduce regression failure while updating the code. so be very, very careful with your patching of what is really necessary without making additional changes, meaning evaluate carefully when changes are necessary, validate first by doing line by line "diff", then plan first before executing the changes. Do testing and simulation if possible. enclose your complete and updated version of the updated files within the ```python (or ```js or ```sql or ```json) opening and ``` closing tags. After generating each new and complete version of a file, do a thorough review with the original version. Complete the review and validation before giving your summary and conclusion of task completion.
+
