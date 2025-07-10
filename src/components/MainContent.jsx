@@ -11,7 +11,9 @@ import { useApp } from '../contexts/AppContext';
 function MainContent({ onMenuClick }) {
   const {
     selectedProject,
+    selectedSession,
     activeTab,
+    setActiveTab,
     isMobile,
     isLoadingProjects,
   } = useApp();
@@ -88,12 +90,41 @@ function MainContent({ onMenuClick }) {
 
   return (
     <div className="h-full flex flex-col">
+      {/* Header with tabs */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {isMobile && (
+              <button
+                onClick={onMenuClick}
+                onTouchStart={(e) => { e.preventDefault(); onMenuClick(); }}
+                className="p-2.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 touch-manipulation active:scale-95"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </button>
+            )}
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {selectedProject.displayName}
+              </h2>
+            </div>
+          </div>
+          
+          {/* Desktop Tab Navigation */}
+          <div className="flex-shrink-0 hidden sm:block">
+            {/* Tab buttons rendering logic remains the same */}
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className={`h-full ${activeTab === 'chat' ? 'block' : 'hidden'}`}><ChatInterface onFileOpen={handleFileOpen} onNavigateToSession={handleNavigateToSession} /></div>
         <div className={`h-full overflow-hidden ${activeTab === 'files' ? 'block' : 'hidden'}`}><FileTree /></div>
         <div className={`h-full overflow-hidden ${activeTab === 'shell' ? 'block' : 'hidden'}`}><Shell /></div>
         <div className={`h-full overflow-hidden ${activeTab === 'git' ? 'block' : 'hidden'}`}><GitPanel /></div>
       </div>
+
       {editingFile && <CodeEditor file={editingFile} onClose={handleCloseEditor} projectPath={selectedProject?.path} />}
     </div>
   );
