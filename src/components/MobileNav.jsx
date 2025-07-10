@@ -1,17 +1,34 @@
 // src/components/MobileNav.jsx
 import React from 'react';
-import { MessageSquare, Folder, Terminal, GitBranch } from 'lucide-react';
+import { MessageSquare, Folder, Terminal, GitBranch, Globe } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
 function MobileNav() {
   const { activeTab, setActiveTab, isInputFocused } = useApp();
-  const isDarkMode = document.documentElement.classList.contains('dark');
   
+  // Detect dark mode
+  const isDarkMode = document.documentElement.classList.contains('dark');
   const navItems = [
-    { id: 'chat', icon: MessageSquare, onClick: () => setActiveTab('chat') },
-    { id: 'shell', icon: Terminal, onClick: () => setActiveTab('shell') },
-    { id: 'files', icon: Folder, onClick: () => setActiveTab('files') },
-    { id: 'git', icon: GitBranch, onClick: () => setActiveTab('git') }
+    {
+      id: 'chat',
+      icon: MessageSquare,
+      onClick: () => setActiveTab('chat')
+    },
+    {
+      id: 'shell',
+      icon: Terminal,
+      onClick: () => setActiveTab('shell')
+    },
+    {
+      id: 'files',
+      icon: Folder,
+      onClick: () => setActiveTab('files')
+    },
+    {
+      id: 'git',
+      icon: GitBranch,
+      onClick: () => setActiveTab('git')
+    }
   ];
 
   return (
@@ -44,7 +61,7 @@ function MobileNav() {
                 e.preventDefault();
                 item.onClick();
               }}
-              className={`flex items-center justify-center p-2 rounded-lg min-h-[40px] min-w-[40px] relative touch-manipulation ${
+              className={`flex items-center justify-center p-2 rounded-lg min-h-[44px] min-w-[44px] relative touch-manipulation ${
                 isActive
                   ? 'text-blue-600 dark:text-blue-400'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
