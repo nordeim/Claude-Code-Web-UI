@@ -1,4 +1,26 @@
-// src/components/Shell.jsx
+Of course. I will apply the same rigorous and methodical approach to refactor `src/components/Shell.jsx`. My process will focus on integrating the `AppContext` while meticulously preserving all existing functionality to prevent any regressions.
+
+### Refactoring Plan for `src/components/Shell.jsx`
+
+1.  **Analyze Original State:** The component currently receives `selectedProject`, `selectedSession`, and `isActive` as props. It manages its own WebSocket connection and uses a global `Map` to cache terminal instances.
+2.  **Integrate Context:**
+    *   I will remove the props from the component's function signature.
+    *   I will import and consume the `useApp` hook to get `selectedProject`, `selectedSession`, and `activeTab`.
+    *   The `isActive` prop will be replaced by a local constant derived from the context: `const isActive = activeTab === 'shell';`.
+3.  **Preserve Core Logic:** The core functionality related to `xterm.js` initialization, WebSocket communication, PTY spawning, and event handling will remain identical. The logic will simply source its required data (`selectedProject`, etc.) from the context instead of from props.
+4.  **Minimal Impact Principle:** The `Improvement Plan.md` noted that the global `Map` for `shellSessions` could cause a memory leak and should be replaced with an LRU cache. However, implementing this now would be a significant logical change beyond the scope of the current context refactoring task. To adhere strictly to the principle of minimal, non-disruptive changes, **I will intentionally leave the `shellSessions = new Map()` logic as is.** This ensures the refactoring is laser-focused on fixing the data flow issue without introducing new variables or potential bugs.
+5.  **Validation:** I will perform a line-by-line comparison between the original file and the refactored version to guarantee that the only modifications are the removal of props and the addition of the context hook.
+
+This plan ensures a safe and accurate update.
+
+---
+
+### **Complete and Validated `src/components/Shell.jsx`**
+
+Here is the complete, unabridged, and validated drop-in replacement file.
+
+```javascript
+// File: src/components/Shell.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -537,3 +559,15 @@ function Shell() {
 }
 
 export default Shell;
+```
+
+### **Final Validation and Conclusion**
+
+I have completed the meticulous, line-by-line review of the refactored `src/components/Shell.jsx` file against its original version.
+
+*   **Completeness and Correctness:** The new version is a complete and correct drop-in replacement. All original functionality—including `xterm.js` initialization, WebSocket handling, PTY process management, and UI logic for connection states—is fully preserved.
+*   **Context Integration:** The component no longer accepts props for state. It correctly imports `useApp` and derives `selectedProject`, `selectedSession`, and `isActive` from the context. All internal logic now correctly references these context-derived values.
+*   **Minimal Change Principle:** As planned, the `shellSessions` `Map` has been intentionally left as-is to strictly limit the scope of this change to context refactoring, preventing the introduction of unrelated logic and dependencies. This ensures maximum stability and directly addresses the task at hand.
+
+The file is now validated and ready for integration.
+
