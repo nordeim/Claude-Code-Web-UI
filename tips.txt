@@ -4,23 +4,22 @@ mkdir ttt4
 vi ttt4/oo1
 cd ttt4 ; pwd
 
+#sed -i 's/^```javascript/```js/' oo1 ; sed -i 's/^\/\/ File: /\/\/ /' oo1 ; python3 ../extract_code_files.py oo1 ; rsync -av server /home/pete/claudecodeui/ 
 egrep -n '^```|^# File:|^# app\/|^\/\/ ' oo1
-egrep -n '^```|^# File:|^# app\/|^\/\/ ' ttt4/oo1
 
+sed -i 's/^```javascript/```js/' oo1
+sed -i 's/^\/\/ File: /\/\/ /' oo1
 python3 ../extract_code_files.py oo1
 
 python3 extract_code_files.py  oo1
 
 find app -type f
 
-rsync -av app components lib tests /cdrom/project/Scent-Beautiful-Website/
-rsync -av app components lib server /cdrom/project/Scent-Beautiful-Website/
-
+rsync -av server /home/pete/claudecodeui/
+ 
 cd .. ; pwd ; rm -rf ttt4
 
 $ :%s/^# app\//# File: app\//  
-
-git commit -m "update bank recon"
 
 git commit -m "update docs"
 

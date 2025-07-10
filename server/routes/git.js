@@ -1,18 +1,10 @@
+// server/routes/git.js
 const express = require('express');
-const { exec } = require('child_process');
-const { promisify } = require('util');
 const path = require('path');
 const fs = require('fs').promises;
+const { getActualProjectPath, spawnAsync } = require('../utils');
 
 const router = express.Router();
-const execAsync = promisify(exec);
-
-// Helper function to get the actual project path from the encoded project name
-function getActualProjectPath(projectName) {
-  // Claude stores projects with dashes instead of slashes
-  // Convert "-Users-dmieloch-Dev-experiments-claudecodeui" to "/Users/dmieloch/Dev/experiments/claudecodeui"
-  return projectName.replace(/-/g, '/');
-}
 
 // Get git status for a project
 router.get('/status', async (req, res) => {
@@ -23,7 +15,7 @@ router.get('/status', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     console.log('Git status for project:', project, '-> path:', projectPath);
     
     // Check if directory exists
@@ -36,17 +28,17 @@ router.get('/status', async (req, res) => {
 
     // Check if it's a git repository
     try {
-      await execAsync('git rev-parse --git-dir', { cwd: projectPath });
+      await spawnAsync('git', ['rev-parse', '--git-dir'], { cwd: projectPath });
     } catch {
       console.error('Not a git repository:', projectPath);
       return res.json({ error: 'Not a git repository' });
     }
 
     // Get current branch
-    const { stdout: branch } = await execAsync('git rev-parse --abbrev-ref HEAD', { cwd: projectPath });
+    const { stdout: branch } = await spawnAsync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { cwd: projectPath });
     
     // Get git status
-    const { stdout: statusOutput } = await execAsync('git status --porcelain', { cwd: projectPath });
+    const { stdout: statusOutput } = await spawnAsync('git', ['status', '--porcelain'], { cwd: projectPath });
     
     const modified = [];
     const added = [];
@@ -92,27 +84,31 @@ router.get('/diff', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Check if file is untracked
-    const { stdout: statusOutput } = await execAsync(`git status --porcelain "${file}"`, { cwd: projectPath });
+    const { stdout: statusOutput } = await spawnAsync('git', ['status', '--porcelain', file], { cwd: projectPath });
     const isUntracked = statusOutput.startsWith('??');
     
     let diff;
     if (isUntracked) {
       // For untracked files, show the entire file content as additions
-      const fileContent = await fs.readFile(path.join(projectPath, file), 'utf-8');
+      const safeFilePath = path.join(projectPath, file);
+      if (!path.resolve(safeFilePath).startsWith(path.resolve(projectPath))) {
+          return res.status(403).json({ error: 'Access denied: Path is outside of project directory.' });
+      }
+      const fileContent = await fs.readFile(safeFilePath, 'utf-8');
       const lines = fileContent.split('\n');
       diff = `--- /dev/null\n+++ b/${file}\n@@ -0,0 +1,${lines.length} @@\n` + 
              lines.map(line => `+${line}`).join('\n');
     } else {
       // Get diff for tracked files
-      const { stdout } = await execAsync(`git diff HEAD -- "${file}"`, { cwd: projectPath });
+      const { stdout } = await spawnAsync('git', ['diff', 'HEAD', '--', file], { cwd: projectPath });
       diff = stdout || '';
       
       // If no unstaged changes, check for staged changes
       if (!diff) {
-        const { stdout: stagedDiff } = await execAsync(`git diff --cached -- "${file}"`, { cwd: projectPath });
+        const { stdout: stagedDiff } = await spawnAsync('git', ['diff', '--cached', '--', file], { cwd: projectPath });
         diff = stagedDiff;
       }
     }
@@ -133,20 +129,18 @@ router.post('/commit', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Stage selected files
-    for (const file of files) {
-      await execAsync(`git add "${file}"`, { cwd: projectPath });
-    }
+    await spawnAsync('git', ['add', ...files], { cwd: projectPath });
     
     // Commit with message
-    const { stdout } = await execAsync(`git commit -m "${message.replace(/"/g, '\\"')}"`, { cwd: projectPath });
+    const { stdout } = await spawnAsync('git', ['commit', '-m', message], { cwd: projectPath });
     
     res.json({ success: true, output: stdout });
   } catch (error) {
     console.error('Git commit error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message, stderr: error.stderr });
   }
 });
 
@@ -159,11 +153,11 @@ router.get('/branches', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     console.log('Git branches for project:', project, '-> path:', projectPath);
     
     // Get all branches
-    const { stdout } = await execAsync('git branch -a', { cwd: projectPath });
+    const { stdout } = await spawnAsync('git', ['branch', '-a'], { cwd: projectPath });
     
     // Parse branches
     const branches = stdout
@@ -199,10 +193,10 @@ router.post('/checkout', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Checkout the branch
-    const { stdout } = await execAsync(`git checkout "${branch}"`, { cwd: projectPath });
+    const { stdout } = await spawnAsync('git', ['checkout', branch], { cwd: projectPath });
     
     res.json({ success: true, output: stdout });
   } catch (error) {
@@ -220,10 +214,10 @@ router.post('/create-branch', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Create and checkout new branch
-    const { stdout } = await execAsync(`git checkout -b "${branch}"`, { cwd: projectPath });
+    const { stdout } = await spawnAsync('git', ['checkout', '-b', branch], { cwd: projectPath });
     
     res.json({ success: true, output: stdout });
   } catch (error) {
@@ -241,13 +235,10 @@ router.get('/commits', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Get commit log with stats
-    const { stdout } = await execAsync(
-      `git log --pretty=format:'%H|%an|%ae|%ad|%s' --date=relative -n ${limit}`,
-      { cwd: projectPath }
-    );
+    const { stdout } = await spawnAsync('git', ['log', `--pretty=format:%H|%an|%ae|%ad|%s`, '--date=relative', '-n', limit], { cwd: projectPath });
     
     const commits = stdout
       .split('\n')
@@ -266,10 +257,7 @@ router.get('/commits', async (req, res) => {
     // Get stats for each commit
     for (const commit of commits) {
       try {
-        const { stdout: stats } = await execAsync(
-          `git show --stat --format='' ${commit.hash}`,
-          { cwd: projectPath }
-        );
+        const { stdout: stats } = await spawnAsync('git', ['show', '--stat', '--format=', commit.hash], { cwd: projectPath });
         commit.stats = stats.trim().split('\n').pop(); // Get the summary line
       } catch (error) {
         commit.stats = '';
@@ -292,13 +280,10 @@ router.get('/commit-diff', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Get diff for the commit
-    const { stdout } = await execAsync(
-      `git show ${commit}`,
-      { cwd: projectPath }
-    );
+    const { stdout } = await spawnAsync('git', ['show', commit], { cwd: projectPath });
     
     res.json({ diff: stdout });
   } catch (error) {
@@ -316,16 +301,13 @@ router.post('/generate-commit-message', async (req, res) => {
   }
 
   try {
-    const projectPath = getActualProjectPath(project);
+    const projectPath = await getActualProjectPath(project);
     
     // Get diff for selected files
     let combinedDiff = '';
     for (const file of files) {
       try {
-        const { stdout } = await execAsync(
-          `git diff HEAD -- "${file}"`,
-          { cwd: projectPath }
-        );
+        const { stdout } = await spawnAsync('git', ['diff', 'HEAD', '--', file], { cwd: projectPath });
         if (stdout) {
           combinedDiff += `\n--- ${file} ---\n${stdout}`;
         }
