@@ -1,0 +1,19 @@
+# find .gitignore .env.example index.html package.json postcss.config.js tailwind.config.js vite.config.js src server public -type f -mmin -900 
+.env.example
+package.json
+src/App.jsx
+src/components/MobileNav.jsx
+src/components/QuickSettingsPanel.jsx
+src/components/Shell.jsx
+src/components/MainContent.jsx
+src/components/FileTree.jsx
+src/components/Sidebar.jsx
+src/components/GitPanel.jsx
+src/components/ChatInterface.jsx
+src/main.jsx
+src/contexts/AppContext.jsx
+src/index.css
+server/utils.js
+server/projects.js
+server/index.js
+server/routes/git.js
