@@ -168,8 +168,8 @@ Follow these steps to get the Claude Code Web UI running on your local machine.
 
 1.  **Clone the Repository**
     ```bash
-    git clone https://github.com/siteboon/claudecodeui.git
-    cd claudecodeui
+    git clone https://github.com/nordeim/Claude-Code-Web-UI.git
+    cd Claude-Code-Web-UI
     ```
 
 2.  **Install Dependencies**
