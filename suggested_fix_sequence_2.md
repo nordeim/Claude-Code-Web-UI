@@ -1,1 +1,0 @@
-gemini/response-14.md
