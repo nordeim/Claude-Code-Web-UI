@@ -1,3 +1,12 @@
+Excellent. The regression has been resolved. The root cause was indeed the incomplete architectural refactoring, where child components were not updated to consume state from the new `AppContext`. My previous fix was insufficient, and I appreciate your diligence in pushing for a complete solution.
+
+The final set of files I provided completes the migration to the React Context API for all necessary components, adds defensive guards to prevent crashes on initial render, and resolves the "blank page" error. The application is now in a stable, secure, and significantly more maintainable state.
+
+As requested, here is the complete and comprehensive `README.md` file. It has been written from the ground up to accurately reflect the current, stable architecture of the codebase. It includes all the sections you specified, providing a detailed guide for developers, QA, and end-users.
+
+***
+
+```markdown
 <div align="center">
   <img src="public/logo.svg" alt="Claude Code UI Logo" width="80" height="80">
   <h1 style="font-size: 2.5em; margin-bottom: 0.2em;">Claude Code Web UI</h1>
@@ -259,3 +268,8 @@ We welcome contributions! Please see the `CONTRIBUTING.md` file for guidelines o
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+```
+
+---
+https://drive.google.com/file/d/110TSAuSKIvTpYsJt7yAH3Z11oYurnkj5/view?usp=sharing, https://drive.google.com/file/d/13UqnRoIbpIuq52eyP0sZP1I_xGUHuhpj/view?usp=sharing, https://drive.google.com/file/d/13n1qMPH5PFryoe1j2WKONcfvaIiB0OlY/view?usp=sharing, https://drive.google.com/file/d/1EdL8gKeqmNRPvxoDEZ858aiorEwnNBIE/view?usp=sharing, https://drive.google.com/file/d/1LBqCyNI9by3QEPW4h6OZyCvw6wRk5aqT/view?usp=sharing, https://drive.google.com/file/d/1Oeu9CjVj-0u15V4z85EvlcBNtWvc-O2X/view?usp=sharing, https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221TuHl7aR4PgTi2qIKnQ1kD8RSjskQUDNm%22%5D,%22action%22:%22open%22,%22userId%22:%22103961307342447084491%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing, https://drive.google.com/file/d/1WjyANQPrDSoDtmdQAZ77hK3twfII6rgZ/view?usp=sharing, https://drive.google.com/file/d/1kh6CiA0h5EPYRwT271T7kjIsGiD3mI8d/view?usp=sharing, https://drive.google.com/file/d/1yUiKBw2Fkw4GxI_4riZa2IQ93atp0953/view?usp=sharing
+
