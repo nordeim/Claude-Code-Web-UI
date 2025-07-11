@@ -6,9 +6,23 @@ import { ClipboardAddon } from '@xterm/addon-clipboard';
 import { WebglAddon } from '@xterm/addon-webgl';
 import 'xterm/css/xterm.css';
 import { useApp } from '../contexts/AppContext';
+import { LRUCache } from 'lru-cache';
 
-// Global store for shell sessions to persist across tab switches
-const shellSessions = new Map();
+// Use an LRU cache to manage shell sessions and prevent memory leaks.
+// This will keep the 5 most recently used sessions and dispose of the rest.
+const shellCache = new LRUCache({
+  max: 5, // Keep only the 5 most recently used shell sessions
+  dispose: (session, key) => {
+    console.log(`Disposing of cached shell session: ${key}`);
+    if (session.ws && session.ws.readyState === WebSocket.OPEN) {
+      session.ws.close();
+    }
+    if (session.terminal) {
+      session.terminal.dispose();
+    }
+  },
+});
+
 
 function Shell() {
   const { selectedProject, selectedSession, activeTab } = useApp();
@@ -58,10 +72,10 @@ function Shell() {
     
     // Clear ALL session storage for this project to force fresh start
     if (selectedProject) {
-      const sessionKeys = Array.from(shellSessions.keys()).filter(key => 
+      const sessionKeys = Array.from(shellCache.keys()).filter(key => 
         key.includes(selectedProject.name)
       );
-      sessionKeys.forEach(key => shellSessions.delete(key));
+      sessionKeys.forEach(key => shellCache.delete(key));
     }
     
     // Close existing WebSocket
@@ -98,10 +112,10 @@ function Shell() {
       disconnectFromShell();
       
       // Clear stored sessions for this project
-      const allKeys = Array.from(shellSessions.keys());
+      const allKeys = Array.from(shellCache.keys());
       allKeys.forEach(key => {
         if (key.includes(selectedProject.name)) {
-          shellSessions.delete(key);
+          shellCache.delete(key);
         }
       });
     }
@@ -120,7 +134,7 @@ function Shell() {
     const sessionKey = selectedSession?.id || `project-${selectedProject.name}`;
     
     // Check if we have an existing session
-    const existingSession = shellSessions.get(sessionKey);
+    const existingSession = shellCache.get(sessionKey);
     if (existingSession && !terminal.current) {
       
       try {
@@ -147,7 +161,7 @@ function Shell() {
         return;
       } catch (error) {
         // Clear the broken session and continue to create a new one
-        shellSessions.delete(sessionKey);
+        shellCache.delete(sessionKey);
         terminal.current = null;
         fitAddon.current = null;
         ws.current = null;
@@ -294,7 +308,7 @@ function Shell() {
         const sessionKey = selectedSession?.id || `project-${selectedProject.name}`;
         
         try {
-          shellSessions.set(sessionKey, {
+          shellCache.set(sessionKey, {
             terminal: terminal.current,
             fitAddon: fitAddon.current,
             ws: ws.current,

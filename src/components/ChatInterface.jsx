@@ -899,6 +899,8 @@ function ChatInterface({ onFileOpen, onNavigateToSession }) {
   const [atSymbolPosition, setAtSymbolPosition] = useState(-1);
   const [isTextareaExpanded, setIsTextareaExpanded] = useState(false);
   const [claudeStatus, setClaudeStatus] = useState(null);
+  const [showFileDropdown, setShowFileDropdown] = useState(false);
+
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
@@ -1057,7 +1059,7 @@ function ChatInterface({ onFileOpen, onNavigateToSession }) {
       const savedInput = localStorage.getItem(`draft_input_${selectedProject.name}`) || '';
       if (savedInput !== input) setInput(savedInput);
     }
-  }, [selectedProject?.name]);
+  }, [selectedProject?.name, input]);
 
   useEffect(() => {
     if (messages.length > 0) {
