@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="main_screen.png" alt="Claude Code UI Logo" width="80" height="80">
+  <img src="main_screen.png" alt="Claude Code UI Logo" width="600" height="500">
   <h1 style="font-size: 2.5em; margin-bottom: 0.2em;">Claude Code Web UI</h1>
   <p style="font-size: 1.2em; color: hsl(215, 20.2%, 65.1%);">A rich, cross-device web interface for the <code>claude-code</code> CLI</p>
 </div>
